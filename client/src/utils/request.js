@@ -1,4 +1,4 @@
-export const request = async (method, url, data) => {
+const request = async (method, url, data) => {
     let options = {};
 
     if (method != 'GET') {
@@ -20,7 +20,7 @@ export const request = async (method, url, data) => {
     const response = await fetch(url, options);
     const result = await response.json();
 
-    return result
+    return result;
 };
 
 export default {
