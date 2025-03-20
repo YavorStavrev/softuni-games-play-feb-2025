@@ -1,25 +1,17 @@
-import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import gameService from "../../services/gameService";
 import CommentsShow from "../comments-show/CommentsShow";
 import CommentsCreate from "../comments-create/CommentsCreate";
-import commentService from "../../services/commentService";
-import { UserContext } from "../../contexts/UserContext";
-import { useGame } from "../../api/gameApi";
+import { useDeleteGame, useGame } from "../../api/gameApi";
+import useAuth from "../../hooks/useAuth";
+import { useComments } from "../../api/commentApi";
 
 export default function GameDetails() {
-
     const navigate = useNavigate();
-    const { email } = useContext(UserContext);
-    // const [game, setGame] = useState({});
-    const [comments, setComments] = useState([]);
+    const { email, _id: userId } = useAuth()
     const { gameId } = useParams();
     const { game } = useGame(gameId);
-
-    useEffect(() => {
-        commentService.getAll(gameId)
-            .then(setComments);
-    }, [gameId]);
+    const { deleteGame } = useDeleteGame();
+    const { comments } = useComments(gameId)
 
     const gameDeleteClickHandler = async () => {
         const hasConfirm = confirm(`Are you sure you want to delete ${game.title} game?`);
@@ -28,14 +20,16 @@ export default function GameDetails() {
             return;
         }
 
-        await gameService.delete(gameId);
+        await deleteGame(gameId);
 
         navigate('/games');
     };
 
     const commentCreateHandler = (newComment) => {
-        setComments(state => [...state, newComment]);
+        // setComments(state => [...state, newComment]);
     };
+
+    const isOwner = userId === game._ownerId;
 
     return (
         <section id="game-details">
@@ -49,24 +43,29 @@ export default function GameDetails() {
                     <p className="type">{game.category}</p>
                 </div>
 
-                <p className="text">
-                    {game.summary}
-                </p>
+                <p className="text">{game.summary}</p>
 
-                {/* <!-- Bonus ( for Guests and Users ) --> */}
                 <CommentsShow comments={comments} />
 
                 {/* <!-- Edit/Delete buttons ( Only for creator of this game )  --> */}
-                <div className="buttons">
-                    <Link to={`/games/${gameId}/edit`} className="button">Edit</Link>
-                    <button onClick={gameDeleteClickHandler} className="button">Delete</button>
-                </div>
+                {isOwner && (
+                    <div className="buttons">
+                        <Link to={`/games/${gameId}/edit`} className="button">Edit</Link>
+                        <button
+                            onClick={gameDeleteClickHandler}
+                            className="button"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {/* <!-- Bonus --> */}
-            {/* <!-- Add Comment ( Only for logged-in users, which is not creators of the current game ) --> */}
-            <CommentsCreate email={email} gameId={gameId} onCreate={commentCreateHandler} />
-
+            <CommentsCreate
+                email={email}
+                gameId={gameId}
+                onCreate={commentCreateHandler}
+            />
         </section>
     );
 }

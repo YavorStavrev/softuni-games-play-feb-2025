@@ -1,55 +1,22 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import request from "../utils/request";
-import { UserContext } from "../contexts/UserContext";
+import useAuth from "../hooks/useAuth";
 
 const baseUrl = 'http://localhost:3030/data/games';
 
-export default {
-    getOne(gameId) {
-        return request.get(`${baseUrl}/${gameId}`);
-    },
-
-    delete(gameId) {
-        return request.delete(`${baseUrl}/${gameId}`);
-    },
-    edit(gameId, gameData) {
-        return request.put(`${baseUrl}/${gameId}`, { ...gameData, _id: gameId });
-    }
-}
-
 export const useGames = () => {
-    cosnt [games, setGames] = useState([]);
+    const [games, setGames] = useState([]);
 
     useEffect(() => {
         request.get(baseUrl)
             .then(setGames)
     }, []);
 
-    return {
-        games,
-    }
-}
-
-export const useCreateGame = () => {
-    const { accessToken } = useContext(UserContext);
-
-    const options = {
-        headers: {
-            'X-Authorization': accessToken,
-        }
-    }
-
-    const create = (gameData) => {
-        request.post(baseUrl, gameData, options);
-    }
-
-    return {
-        create,
-    }
-}
+    return { games };
+};
 
 export const useGame = (gameId) => {
-    const [game, setGame] = useState();
+    const [game, setGame] = useState({});
 
     useEffect(() => {
         request.get(`${baseUrl}/${gameId}`)
@@ -59,4 +26,54 @@ export const useGame = (gameId) => {
     return {
         game,
     };
-}
+};
+
+export const useLatestGames = () => {
+    const [latestGames, setLatestGames] = useState([]);
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams({
+            sortBy: '_createdOn desc',
+            pageSize: 3,
+            select: '_id,imageUrl,title',
+        });
+
+        request.get(`${baseUrl}?${searchParams.toString()}`)
+            .then(setLatestGames)
+    }, []);
+
+    return { latestGames };
+};
+
+export const useCreateGame = () => {
+    const { request } = useAuth();
+
+    const create = (gameData) =>
+        request.post(baseUrl, gameData);
+
+    return {
+        create,
+    }
+};
+
+export const useEditGame = () => {
+    const { request } = useAuth();
+
+    const edit = (gameId, gameData) =>
+        request.put(`${baseUrl}/${gameId}`, { ...gameData, _id: gameId });
+
+    return {
+        edit,
+    }
+};
+
+export const useDeleteGame = () => {
+    const { request } = useAuth();
+
+    const deleteGame = (gameId) =>
+        request.delete(`${baseUrl}/${gameId}`);
+
+    return {
+        deleteGame,
+    }
+};

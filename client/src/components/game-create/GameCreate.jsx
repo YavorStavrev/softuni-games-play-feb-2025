@@ -1,18 +1,18 @@
-import { useCreateGame } from "../../api/gameApi";
-import { useNavigate } from "react-router";
+import { useNavigate } from 'react-router';
+
+import { useCreateGame } from '../../api/gameApi';
 
 export default function GameCreate() {
     const navigate = useNavigate();
-    const { create } = useCreateGame();
+    const { create: createGame } = useCreateGame();
 
     const submitAction = async (formData) => {
         const gameData = Object.fromEntries(formData);
 
-        await create(gameData);
-        
+        await createGame(gameData);
+
         navigate('/games');
     };
-
 
     return (
         <section id="create-page" className="auth">

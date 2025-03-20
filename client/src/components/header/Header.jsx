@@ -7,18 +7,18 @@ export default function Header() {
 
     return (
         <header>
-            {/* <!-- Navigation --> */}
             <h1><Link className="home" to="/">GamesPlay</Link></h1>
             <nav>
                 <Link to="/games">All games</Link>
                 {/* <!-- Logged-in users --> */}
-                {email ? (
-                    <div id="user">
-                        <Link to="/games/create">Create Game</Link>
-                        <Link to="/logout">Logout</Link>
-                        {email}
-                    </div>
-                )
+                {email
+                    ? (
+                        <div id="user">
+                            <Link to="/games/create">Create Game</Link>
+                            <Link to="/logout">Logout</Link>
+                            {email}
+                        </div>
+                    )
                     : (
                         <div id="guest">
                             <Link to="/login">Login</Link>

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useRegister();
-    const { userLoginHandler } = useContext(UserContext);
+    const { userLoginHandler } = useContext(UserContext)
 
     const registerHandler = async (formData) => {
         const { email, password } = Object.fromEntries(formData);
@@ -14,7 +14,7 @@ export default function Register() {
         const confirmPassword = formData.get('confirm-password');
 
         if (password !== confirmPassword) {
-            console.log("Password missmatch!");
+            console.log('Password missmatch');
 
             return;
         }

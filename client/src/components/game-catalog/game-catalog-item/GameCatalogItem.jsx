@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from 'react-router'
 
 export default function GameCatalogItem({
     _id,
@@ -14,7 +14,6 @@ export default function GameCatalogItem({
                 <h2>{title}</h2>
                 <Link to={`/games/${_id}/details`} className="details-button">Details</Link>
             </div>
-
         </div>
     );
 }
