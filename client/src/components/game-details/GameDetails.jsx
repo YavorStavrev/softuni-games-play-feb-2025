@@ -5,23 +5,20 @@ import CommentsShow from "../comments-show/CommentsShow";
 import CommentsCreate from "../comments-create/CommentsCreate";
 import commentService from "../../services/commentService";
 import { UserContext } from "../../contexts/UserContext";
+import { useGame } from "../../api/gameApi";
 
 export default function GameDetails() {
 
     const navigate = useNavigate();
     const { email } = useContext(UserContext);
-    const [game, setGame] = useState({});
+    // const [game, setGame] = useState({});
     const [comments, setComments] = useState([]);
     const { gameId } = useParams();
+    const { game } = useGame(gameId);
 
     useEffect(() => {
-        gameService.getOne(gameId)
-            .then(result => {
-                setGame(result);
-            })
-
-            commentService.getAll(gameId)
-                .then(setComments);
+        commentService.getAll(gameId)
+            .then(setComments);
     }, [gameId]);
 
     const gameDeleteClickHandler = async () => {
@@ -57,7 +54,7 @@ export default function GameDetails() {
                 </p>
 
                 {/* <!-- Bonus ( for Guests and Users ) --> */}
-                <CommentsShow comments={comments}/>
+                <CommentsShow comments={comments} />
 
                 {/* <!-- Edit/Delete buttons ( Only for creator of this game )  --> */}
                 <div className="buttons">
@@ -68,7 +65,7 @@ export default function GameDetails() {
 
             {/* <!-- Bonus --> */}
             {/* <!-- Add Comment ( Only for logged-in users, which is not creators of the current game ) --> */}
-            <CommentsCreate email={email} gameId={gameId} onCreate={commentCreateHandler}/>
+            <CommentsCreate email={email} gameId={gameId} onCreate={commentCreateHandler} />
 
         </section>
     );
