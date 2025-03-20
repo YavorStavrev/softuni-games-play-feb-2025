@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import request from "../utils/request";
 import { UserContext } from "../contexts/UserContext";
 
@@ -21,6 +21,19 @@ export default {
     },
     edit(gameId, gameData) {
         return request.put(`${baseUrl}/${gameId}`, { ...gameData, _id: gameId });
+    }
+}
+
+export const useGames = () => {
+    cosnt [games, setGames] = useState([]);
+
+    useEffect(() => {
+        request.get(baseUrl)
+            .then(setGames)
+    }, []);
+
+    return {
+        games,
     }
 }
 
